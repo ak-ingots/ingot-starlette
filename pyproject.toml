@@ -49,7 +49,9 @@ dev = [
     "flake8",
     "flake8-class-attributes-order",
     "flake8-pyproject",
+    "httpx",
     "mypy",
+    "uvicorn",
 ]
 changelog = ["towncrier"]
 
