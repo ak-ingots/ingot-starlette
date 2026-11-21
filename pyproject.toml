@@ -25,6 +25,11 @@ dependencies = [
     "starlette>=1.10,<2",
 ]
 
+# The transcoding of the services of protobuf to HTTP and JSON: protobuf
+# alone, no grpcio.
+[project.optional-dependencies]
+protobuf = ["googleapis-common-protos>=1.70,<2", "protobuf>=6.31,<8"]
+
 [project.urls]
 repository = "https://github.com/ak-ingots/ingot-starlette"
 changelog = "https://github.com/ak-ingots/ingot-starlette/blob/main/CHANGELOG.md"
@@ -49,9 +54,14 @@ dev = [
     "flake8",
     "flake8-class-attributes-order",
     "flake8-pyproject",
+    "googleapis-common-protos>=1.70,<2",
+    "grpcio-tools>=1.84.1",
     "h11",
     "httpx",
     "mypy",
+    "mypy-protobuf>=5.1.0",
+    "protobuf>=6.31,<8",
+    "types-protobuf>=7.35.1.20260906",
     "uvicorn",
 ]
 changelog = ["towncrier"]
@@ -60,9 +70,11 @@ demo = ["uvicorn[standard]>=0.54,<1"]
 
 [tool.black]
 line-length = 88
+# the code of the protos, as protoc writes it
+extend-exclude = "_pb2\\.pyi?$"
 
 [tool.flake8]
-exclude = [".git", ".venv"]
+exclude = [".git", ".venv", "*_pb2.py", "*_pb2.pyi"]
 max-line-length = 88
 extend-ignore = ["E203", "E701", "E704"]
 # Member order of ADR 0007 (ingots-libs). `__init_subclass__` is written with an
@@ -87,6 +99,18 @@ class_attributes_order = [
 strict = true
 python_version = "3.14"
 enable_error_code = ["deprecated", "explicit-override"]
+# the code of the protos of the tests, its stubs of mypy-protobuf checked
+exclude = ["_pb2\\.py$"]
+
+[[tool.mypy.overrides]]
+# the stubs mypy-protobuf generates override without @override
+module = ["tests.proto.*"]
+disable_error_code = ["explicit-override"]
+
+[[tool.mypy.overrides]]
+# googleapis-common-protos ships the stubs of its code, without py.typed
+module = ["google.api", "google.api.*", "google.rpc", "google.rpc.*"]
+follow_untyped_imports = true
 
 [tool.towncrier]
 name = "ingot-starlette"

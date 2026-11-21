@@ -1,0 +1,54 @@
+// The echo of the tests of the transcoding: each binding of google.api.http.
+syntax = "proto3";
+
+package tests.proto;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+service Echo {
+  // the body, the whole request
+  rpc SendEcho(SendEchoRequest) returns (SendEchoResponse) {
+    option (google.api.http) = {post: "/v1/echoes:send" body: "*"};
+  }
+  // a variable of the path, the rest of the query
+  rpc GetEcho(GetEchoRequest) returns (SendEchoResponse) {
+    option (google.api.http) = {get: "/v1/echoes/{text}"};
+  }
+  // the query alone
+  rpc ListEchoes(ListEchoesRequest) returns (ListEchoesResponse) {
+    option (google.api.http) = {get: "/v1/echoes"};
+  }
+  // a custom verb, failing
+  rpc FailEcho(SendEchoRequest) returns (SendEchoResponse) {
+    option (google.api.http) = {post: "/v1/echoes:fail" body: "*"};
+  }
+  // no rule: not served over HTTP
+  rpc HideEcho(SendEchoRequest) returns (SendEchoResponse);
+}
+
+message SendEchoRequest {
+  string text = 1;
+  int64 times = 2;
+  google.protobuf.Timestamp at = 3;
+}
+
+message SendEchoResponse {
+  string text = 1;
+  int64 times = 2;
+  google.protobuf.Timestamp at = 3;
+}
+
+message GetEchoRequest {
+  string text = 1;
+  bool loud = 2;
+}
+
+message ListEchoesRequest {
+  int32 page_size = 1;
+  string filter = 2;
+}
+
+message ListEchoesResponse {
+  repeated string texts = 1;
+}
