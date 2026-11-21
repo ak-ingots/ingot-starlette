@@ -12,11 +12,19 @@ for Starlette. `StarletteProject` (`project.py`) takes the addon's
 (`logging/`, the logger `ingot_starlette`); a unit lives in the
 `__init__.py` of its package, as in `ingots.defaults`, and a class takes the
 prefix `Starlette`, so that an application imports it under its own name.
-`starlette/` is the Starlette unit, empty for now: the application of
-Starlette behind ingot-asgi comes next (the prototype is the branch
-`ingot-asgi-integration`).
-`tests/test_readme.py` runs the README for consumers. `python -m
-ingot_starlette` runs the addon on its own (prefix `INGOT`). A library
+`runner.py` is `StarletteRunner`, the application of Starlette a server
+imports, the project inside, configured by the lifespan; `starlette/` is
+the Starlette unit, the root endpoint, what the runner takes from the
+configured project: the routes and middleware of its hooks, `callers.py`,
+`endpoints.py` (an endpoint routes to its methods; one that is a unit too
+mounts its endpoints, a tree) and `errors/` (the policies as Starlette's
+exception handlers). `operations/` holds `BaseStreamOperation`, an
+operation giving a stream, a draft for `ingots`. No ingot-asgi:
+the prototype on it is the branch `ingot-asgi-integration`.
+`examples/demo` is an application the tests run (`PYTHONPATH`, the copy
+of `make wheel-test`); `tests/test_readme.py` runs the README for
+consumers. `python -m ingot_starlette` runs the addon on its own (prefix
+`INGOT`). A library
 (ADR 0003), Python >= 3.14, part of the
 [ak-ingots](https://github.com/ak-ingots) ecosystem; the meta repository
 `ingots-libs` holds the ecosystem-wide decisions in `docs/adr/`.

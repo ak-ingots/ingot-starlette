@@ -87,6 +87,7 @@ Set as environment variables with the prefix of the project
 | Name | Default | Meaning |
 |---|---|---|
 | `STARLETTE_LOGGING_LEVEL` | `INFO` | the level of the logger of the addon, `ingot_starlette` |
+| `STARLETTE_IS_DEBUG` | `False` | whether a failed request answers with its traceback; never in production |
 
 ## Development
 

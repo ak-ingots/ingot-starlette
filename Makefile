@@ -9,7 +9,10 @@ SHELL := /bin/bash
 .DEFAULT_GOAL := help
 .DELETE_ON_ERROR:
 
-SRC := ingot_starlette tests
+SRC := ingot_starlette tests examples
+
+# The tests run the application of examples/demo too.
+export PYTHONPATH := examples
 
 # Supported interpreters: keep in step with the classifiers and the `wheel`
 # matrix in .github/workflows/ci.yml.
@@ -47,7 +50,11 @@ coverage:  ## unittest on the working tree under coverage; fails below 99%
 wheel-test: all  ## unittest on the built wheel, once per interpreter in PYTHONS
 	@$(MAKE) --no-print-directory installed-test WHEEL="$$(echo dist/*.whl)"
 
-# The tests of tests/ on WHEEL, once per interpreter in PYTHONS: for `wheel-test`
+# What the tests need beside the wheel: the client of Starlette's TestClient,
+# and a server.
+TOOLS ?= httpx uvicorn
+
+# The tests of tests/ on WHEEL, with TOOLS, once per interpreter in PYTHONS: for `wheel-test`
 # and for the workflow `index-test` of the meta repository, which the `release`
 # workflow calls between TestPyPI and PyPI, on the files it has just published.
 .PHONY: installed-test
@@ -57,8 +64,8 @@ installed-test:
 		echo "== $(notdir $(WHEEL)) on Python $$py"; \
 		tmp=$$(mktemp -d); \
 		uv venv --quiet --python $$py "$$tmp/venv"; \
-		uv pip install --quiet --python "$$tmp/venv/bin/python" "$(WHEEL)"; \
-		cp -r tests README.md "$$tmp/"; \
+		uv pip install --quiet --python "$$tmp/venv/bin/python" "$(WHEEL)" $(TOOLS); \
+		cp -r tests examples README.md "$$tmp/"; \
 		(cd "$$tmp" && INGOT_STARLETTE_WHEEL_TEST=1 venv/bin/python -m unittest discover -s tests -t .) \
 			|| { rm -rf "$$tmp"; exit 1; }; \
 		rm -rf "$$tmp"; \
