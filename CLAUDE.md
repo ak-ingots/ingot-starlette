@@ -22,7 +22,10 @@ exception handlers). `operations/` holds `BaseStreamOperation`, an
 operation giving a stream, a draft for `ingots`. No ingot-asgi:
 the prototype on it is the branch `ingot-asgi-integration`.
 `examples/demo` is an application the tests run (`PYTHONPATH`, the copy
-of `make wheel-test`); `tests/test_readme.py` runs the README for
+of `make wheel-test`), in Docker by `examples/docker-compose.yml`;
+`perf/demo` is its stand of the load against its floor, Starlette alone
+(`perf/README.md` of `ingots-libs`; `make perf-smoke` runs its scenarios
+dry); `tests/test_readme.py` runs the README for
 consumers. `python -m ingot_starlette` runs the addon on its own (prefix
 `INGOT`). A library
 (ADR 0003), Python >= 3.14, part of the
@@ -41,6 +44,7 @@ make test         # unittest on the working tree
 make coverage     # the same under coverage; fails below 99%
 make wheel-test   # unittest on the built wheel, PYTHONS="3.14 3.15"
 make format       # black
+make perf-smoke   # the scenarios of perf/demo, dry, against the demo in Docker
 ```
 
 One test: `uv run python -m unittest tests.test_canary.CanaryTestCase`.

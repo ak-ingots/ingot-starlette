@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# The stand of the demo: examples/demo in Docker Compose, its services on the
+# cores of docker-compose.perf.yml, by perf/compose-stand of ingots-libs,
+# INGOTS_META, the runner telling it. What perf/run calls: up TREE,
+# down TREE, perf ARGS...
+here=$(cd "$(dirname "$0")" && pwd)
+# the Python of the images of both roles, one, as the numbers compare
+export DEMO_PYTHON=${DEMO_PYTHON:-3.14}
+meta=${INGOTS_META:-$(git -C "$here" rev-parse --show-toplevel)/..}
+# examples/, not examples/demo: the scenarios run from it, so that the
+# modules of the stand are not shadowed by those of the package demo
+exec "$meta/perf/compose-stand" --stand "$here" --example examples \
+    --file docker-compose.raw.yml --file docker-compose.perf.yml "$@"

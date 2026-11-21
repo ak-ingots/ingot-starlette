@@ -54,6 +54,8 @@ dev = [
     "uvicorn",
 ]
 changelog = ["towncrier"]
+# the server of the demo in its image, `make perf-build` exporting it
+demo = ["uvicorn[standard]>=0.54,<1"]
 
 [tool.black]
 line-length = 88

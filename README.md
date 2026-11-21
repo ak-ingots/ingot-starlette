@@ -99,6 +99,7 @@ make                 # the target list
 make check           # everything CI runs: lint, test, coverage, wheel-test, cl-check
 make format          # black
 make all             # build the sdist and the wheel into dist/
+make perf-smoke      # the scenarios of the load, dry, against the demo in Docker
 ```
 
 - Every change users should know about adds a news fragment to `changelog.d/`
