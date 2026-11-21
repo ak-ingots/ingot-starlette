@@ -2,6 +2,30 @@
 
 <!-- towncrier release notes start -->
 
+## [0.2.0] - 2026-11-21
+### Added
+- Added the subtree of the WebSockets, `ws` of `StarletteUnit`, a
+  `StarletteWebSocketsUnit` at `/ws`: a resource of a state of its own for
+  each connection, `BaseStarletteWebSocketResource`, by a factory and a
+  `StarletteWebSocketRoute`; its caller told once, at the handshake, its
+  operations run for it; `_open` may refuse it before the accept, each
+  message of JSON goes to `_receive`, a failure closes it by `4000 + status`,
+  `send_problem` tells one keeping it, a shutdown closes it by 1001. A
+  request of HTTP is refused by 426, a WebSocket of another origin than the
+  `Host` by 403 unless `_iter_origins` allows it. The API refuses a
+  WebSocket by 404.
+
+### Changed
+- `StarletteUnit` mounts subtrees of its own, each a mount of its own
+  middleware and errors, `ws` of the WebSockets beside: `api`, a `StarletteApiUnit` at `/api`, of JSON alone,
+  refusing an `Accept` of no JSON by 406 and a body not of JSON by 415, its
+  errors problems of `application/problem+json`; `pages`, a
+  `StarlettePagesUnit` at the root, of HTML, its errors pages of HTML. The
+  error policies are shared and tell the problem; a renderer of each subtree,
+  `StarletteJsonProblemRenderer` or `StarletteHtmlProblemRenderer`, its form.
+  Its own routes are those of the subtrees; the handlers given by
+  `add_exception_handler` answer outside them.
+
 ## [0.1.0] - 2026-11-21
 ### Added
 - Started ingot-starlette, an addon of Ingots for Starlette, for `ingots`
