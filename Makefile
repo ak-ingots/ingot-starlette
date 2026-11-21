@@ -50,8 +50,9 @@ coverage:  ## unittest on the working tree under coverage; fails below 99%
 wheel-test: all  ## unittest on the built wheel, once per interpreter in PYTHONS
 	@$(MAKE) --no-print-directory installed-test WHEEL="$$(echo dist/*.whl)"
 
-# What the tests need beside the wheel: the client of Starlette's TestClient,
-# and a server.
+# The extras of the wheel the tests take, and what they need beside it: the
+# client of Starlette's TestClient, and a server.
+EXTRAS ?= protobuf
 TOOLS ?= httpx uvicorn
 
 # The tests of tests/ on WHEEL, with TOOLS, once per interpreter in PYTHONS: for `wheel-test`
@@ -64,12 +65,20 @@ installed-test:
 		echo "== $(notdir $(WHEEL)) on Python $$py"; \
 		tmp=$$(mktemp -d); \
 		uv venv --quiet --python $$py "$$tmp/venv"; \
-		uv pip install --quiet --python "$$tmp/venv/bin/python" "$(WHEEL)" $(TOOLS); \
+		uv pip install --quiet --python "$$tmp/venv/bin/python" "$(WHEEL)[$(EXTRAS)]" $(TOOLS); \
 		cp -r tests examples README.md "$$tmp/"; \
 		(cd "$$tmp" && INGOT_STARLETTE_WHEEL_TEST=1 venv/bin/python -m unittest discover -s tests -t .) \
 			|| { rm -rf "$$tmp"; exit 1; }; \
 		rm -rf "$$tmp"; \
 	done
+
+# The protos of google.api, of googleapis-common-protos, beside its code
+GOOGLEAPIS = $(shell uv run python -c "import google.api.annotations_pb2 as m, pathlib; print(pathlib.Path(m.__file__).parents[2])")
+
+.PHONY: proto
+proto:  ## Generate the code of the .proto files of the tests
+	uv run python -m grpc_tools.protoc -I . -I $(GOOGLEAPIS) \
+		--python_out=. --mypy_out=. tests/proto/*.proto
 
 .PHONY: format
 format:  ## Format code with black
