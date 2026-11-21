@@ -16,7 +16,6 @@ from starlette.middleware.cors import CORSMiddleware
 from ingot_starlette.starlette import StarletteApiUnit
 
 from .echo import EchoEndpoint
-from .stream import StreamEndpoint
 from .ticks import TicksEndpoint
 
 if t.TYPE_CHECKING:
@@ -28,13 +27,11 @@ if t.TYPE_CHECKING:
 class EchoApiUnit(StarletteApiUnit):
     echo = Slot(EchoEndpoint)
     ticks = Slot(TicksEndpoint)
-    stream = Slot(StreamEndpoint)
 
     @t.override
     def _iter_routes(self) -> "Iterator[BaseRoute]":
         yield from self.echo.get_routes()
         yield from self.ticks.get_routes()
-        yield from self.stream.get_routes()
 
     @t.override
     def _iter_middleware(self) -> "Iterator[Middleware]":

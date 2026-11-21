@@ -37,7 +37,8 @@ class HomePage(StarletteEndpoint):
             f"<h1>Echo</h1>{said}"
             '<form method="post" action="/echo"><input name="text">'
             '<button>Echo</button><button formaction="/fail">Fail</button>'
-            "</form></body></html>"
+            '</form><p><a href="/socket">the echo over a WebSocket</a></p>'
+            "</body></html>"
         )
 
     async def send(self, request: Request) -> Response:

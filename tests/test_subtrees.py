@@ -150,3 +150,12 @@ class RendererTestCase(unittest.TestCase):
             response = client.get("/nope")
         self.assertEqual(response.status_code, 404)
         self.assertIn('<a href="http://testserver/">home</a>', response.text)
+
+
+class SocketPageTestCase(unittest.TestCase):
+    def test_the_page_opens_the_websocket_of_its_site(self) -> None:
+        with TestClient(app) as client:
+            response = client.get("/socket")
+            self.assertEqual(response.headers["content-type"], HTML)
+            self.assertIn("/ws/stream", response.text)
+            self.assertIn('href="/socket"', client.get("/").text)

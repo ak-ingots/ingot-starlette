@@ -1,6 +1,6 @@
 """
-The Starlette unit: the application of the project, its two subtrees, the
-API and the pages, its callers and errors.
+The Starlette unit: the application of the project, its three subtrees,
+the API, the WebSockets and the pages, its callers and errors.
 """
 
 __all__ = (
@@ -10,6 +10,7 @@ __all__ = (
     "StarletteEndpoint",
     "StarlettePagesUnit",
     "StarletteUnit",
+    "StarletteWebSocketsUnit",
 )
 
 import typing as t
@@ -22,6 +23,7 @@ from .errors import StarletteErrorsUnit
 from .subtrees import BaseStarletteSubtreeUnit
 from .api import StarletteApiUnit
 from .pages import StarlettePagesUnit
+from .websockets import StarletteWebSocketsUnit
 
 if t.TYPE_CHECKING:
     from collections.abc import Iterator
@@ -39,15 +41,17 @@ class StarletteUnit(StarletteEndpoint, Unit):
     """
     Starlette in the project, the root endpoint: what the application of
     :class:`~ingot_starlette.runner.StarletteRunner` takes once the project is
-    configured. Its routes are its two subtrees, each a mount of its own
-    middleware and errors: :attr:`api`, of JSON alone, at ``/api``, and
-    :attr:`pages`, of HTML, every other path; an application fills them in
-    subclasses, and adds the middleware of the whole application by
-    :meth:`_iter_middleware`, of Starlette as they are::
+    configured. Its routes are its three subtrees, each a mount of its own
+    middleware and errors: :attr:`api`, of JSON alone, at ``/api``;
+    :attr:`ws`, of the WebSockets, a resource of a state for each
+    connection, at ``/ws``; and :attr:`pages`, of HTML, every other path. An
+    application fills them in subclasses, and adds the middleware of the
+    whole application by :meth:`_iter_middleware`, of Starlette as they are::
 
         class AppStarletteUnit(StarletteUnit):
             errors = Slot(AppStarletteErrorsUnit)
             api = Slot(AppApiUnit)
+            ws = Slot(AppWebSocketsUnit)
             pages = Slot(AppPagesUnit)
 
             @t.override
@@ -64,6 +68,7 @@ class StarletteUnit(StarletteEndpoint, Unit):
     callers = Slot(StarletteCallers)
     errors = Slot(StarletteErrorsUnit)
     api = Slot(StarletteApiUnit)
+    ws = Slot(StarletteWebSocketsUnit)
     pages = Slot(StarlettePagesUnit)
 
     @t.final
@@ -87,6 +92,7 @@ class StarletteUnit(StarletteEndpoint, Unit):
     @t.override
     def _iter_routes(self) -> "Iterator[BaseRoute]":
         yield self.api.get_mount()
+        yield self.ws.get_mount()
         yield self.pages.get_mount()
 
     def _iter_middleware(self) -> "Iterator[Middleware]":

@@ -16,22 +16,25 @@ _JSON_TYPES: t.Final = ("application/json", "application/problem+json")
 class StarletteJsonOnlyMiddleware:
     """
     Refuses a request of HTTP not of JSON: an ``Accept`` that takes no JSON
-    by 406, a body not of JSON, by its ``Content-Type``, by 415, as an
-    ``HTTPException`` its subtree answers. A WebSocket passes.
+    by 406, a body not of JSON, by its ``Content-Type``, by 415; a WebSocket
+    by 404, its place the subtree of the WebSockets. As an ``HTTPException``
+    its subtree answers.
     """
 
     def __init__(self, app: "ASGIApp") -> None:
         self._app = app
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        if scope["type"] == "http":
-            headers = Headers(scope=scope)
-            if not accepts_json(headers.get("accept")):
-                raise HTTPException(406)
-            has_body = int(headers.get("content-length", "0") or "0") > 0
-            has_body = has_body or "transfer-encoding" in headers
-            if has_body and not is_json(headers.get("content-type", "")):
-                raise HTTPException(415)
+        # a mount takes no lifespan: a request or a WebSocket
+        if scope["type"] == "websocket":
+            raise HTTPException(404, "a WebSocket is not of the API")
+        headers = Headers(scope=scope)
+        if not accepts_json(headers.get("accept")):
+            raise HTTPException(406)
+        has_body = int(headers.get("content-length", "0") or "0") > 0
+        has_body = has_body or "transfer-encoding" in headers
+        if has_body and not is_json(headers.get("content-type", "")):
+            raise HTTPException(415)
         await self._app(scope, receive, send)
 
 
