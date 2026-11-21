@@ -4,19 +4,20 @@ import typing as t
 
 from ingots.perf import LoadClient, LoadGroup, PerfUnit
 from ingots.puer import Slot
-from project import BODY, DemoPerfProject, check_status
+from project import BODY, DemoPerfProject, build_post, check_status
 
 
 class Sender(LoadClient["PerfProject", "SenderGroup"]):
     @t.override
     async def asyncSetUp(self) -> None:
-        self.http = (await self.project.http.default).client
+        server = await self.project.http.default
+        self.connection = await server.connect()
+        self.request = build_post(server.get_host(), "/api/echo", BODY)
 
     @t.override
     async def run(self) -> None:
         async with self.measure("send-echo"):
-            response = await self.http.post("/api/echo", json=BODY)
-            check_status(response, 200)
+            check_status(await self.connection.send(self.request), 200)
 
 
 class SenderGroup(LoadGroup[None]):

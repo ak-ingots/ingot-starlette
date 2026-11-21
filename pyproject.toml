@@ -49,6 +49,7 @@ dev = [
     "flake8",
     "flake8-class-attributes-order",
     "flake8-pyproject",
+    "h11",
     "httpx",
     "mypy",
     "uvicorn",
