@@ -11,7 +11,7 @@ if t.TYPE_CHECKING:
 
     from starlette.routing import BaseRoute
 
-    from ingot_starlette.project import StarletteProject
+    from ingots.defaults import Project
 
 
 class StarletteEndpoint(Entity):
@@ -33,13 +33,16 @@ class StarletteEndpoint(Entity):
                 echo = await starlette.run_operation(op_send, text, request)
                 return JSONResponse({"text": echo})
 
-    The routes make a tree: an endpoint that is a unit too holds endpoints in
-    its slots and mounts their routes under its paths, the Starlette unit the
-    root. A subclass adds routes to those of its base, ``yield from
-    super()._iter_routes()``.
+    Its project is any: an endpoint of an addon, its RPCs mixed in, takes the
+    project of the addon. The routes make a tree: an endpoint that is a unit
+    too holds endpoints in its slots and mounts their routes under its paths,
+    the Starlette unit the root. A subclass adds routes to those of its base,
+    ``yield from super()._iter_routes()``.
     """
 
-    project: "StarletteProject"
+    # any project: a mixin of an addon narrows it to its own, the run of the
+    # operations, ``project.starlette``, is of the Starlette unit
+    project: "Project"
 
     @t.final
     def get_routes(self) -> "list[BaseRoute]":
