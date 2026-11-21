@@ -6,7 +6,7 @@ import unittest
 from demo.asgi import app
 from demo.project import EchoProject
 from demo.starlette import EchoStarletteUnit
-from demo.starlette.api import ApiEndpoint
+from demo.starlette.api import EchoApiUnit
 from demo.starlette.api.echo import EchoEndpoint
 from ingots.puer import Slot
 from starlette.requests import Request
@@ -56,7 +56,11 @@ class EchoTestCase(unittest.TestCase):
     def test_a_fault_is_an_internal_problem(self) -> None:
         client = TestClient(app, raise_server_exceptions=False)
         with client, self.assertLogs("ingot_starlette", "ERROR"):
-            response = client.post("/api/echo", content=b"not json")
+            response = client.post(
+                "/api/echo",
+                content=b"not json",
+                headers={"content-type": "application/json"},
+            )
         self.assertEqual(response.status_code, 500)
         self.assertEqual(
             response.json(),
@@ -89,12 +93,12 @@ class LoudEchoEndpoint(EchoEndpoint):
 
 
 # a slot extends its base: a leaf replaced, each node above it too
-class LoudApiEndpoint(ApiEndpoint):
+class LoudApiUnit(EchoApiUnit):
     echo = Slot(LoudEchoEndpoint)
 
 
 class LoudStarletteUnit(EchoStarletteUnit):
-    api = Slot(LoudApiEndpoint)
+    api = Slot(LoudApiUnit)
 
 
 class LoudProject(EchoProject):

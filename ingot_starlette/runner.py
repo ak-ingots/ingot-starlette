@@ -117,7 +117,8 @@ class StarletteRunner(Starlette):
         self.router.routes = [*own.routes, *starlette.get_routes()]
         self.user_middleware = [*own.middleware, *starlette.get_middleware()]
         self.exception_handlers = {
-            **starlette.errors.get_exception_handlers(),
+            # of what no subtree takes, a route of add_route: as the pages
+            **starlette.errors.get_exception_handlers(starlette.pages.renderer),
             **own.exception_handlers,
         }
         self.debug = own.debug or project.settings.configs.STARLETTE_IS_DEBUG
