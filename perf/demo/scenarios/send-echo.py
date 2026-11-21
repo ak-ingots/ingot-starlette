@@ -4,7 +4,7 @@ import typing as t
 
 from ingots.perf import LoadClient, LoadGroup, PerfUnit
 from ingots.puer import Slot
-from project import BODY, DemoPerfProject, build_post, check_status
+from load import BODY, DemoPerfProject, build_post, check_status
 
 
 class Sender(LoadClient["PerfProject", "SenderGroup"]):

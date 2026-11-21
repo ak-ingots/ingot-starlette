@@ -12,10 +12,10 @@ import typing as t
 
 from ingot_starlette.starlette.websockets import BaseStarletteWebSocketResource
 
-from demo.echo.operations import TicksParameters
+from echo.operations import TicksParameters
 
 if t.TYPE_CHECKING:
-    from demo.project import EchoProject
+    from project import EchoProject
 
 
 class ChatResource(BaseStarletteWebSocketResource):

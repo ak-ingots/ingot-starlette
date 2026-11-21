@@ -21,7 +21,7 @@ if t.TYPE_CHECKING:
 
     from starlette.routing import BaseRoute
 
-    from demo.project import EchoProject
+    from project import EchoProject
 
 
 class HomePage(StarletteEndpoint):

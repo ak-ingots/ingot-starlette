@@ -11,8 +11,8 @@ SHELL := /bin/bash
 
 SRC := ingot_starlette tests examples perf
 
-# The tests run the application of examples/demo too.
-export PYTHONPATH := examples
+# The tests run the application of examples/demo too, its modules at its root.
+export PYTHONPATH := examples/demo
 
 # Supported interpreters: keep in step with the classifiers and the `wheel`
 # matrix in .github/workflows/ci.yml.
@@ -95,7 +95,7 @@ all:  ## Build the sdist and the wheel into dist/
 
 # the demo of perf-smoke: the application and the floor of the stand
 DEMO_COMPOSE := STAND_DIR=$(CURDIR)/perf/demo docker compose \
-	-f examples/docker-compose.yml -f perf/demo/docker-compose.raw.yml
+	-f examples/demo/docker-compose.yml -f perf/demo/docker-compose.raw.yml
 export DEMO_PYTHON := $(lastword $(PYTHONS))
 
 # What a stand builds a role by, its tree the candidate's or a worktree of
@@ -114,7 +114,7 @@ PERF_PYTHON ?= uv run python
 perf-smoke: perf-build  ## the scenarios of the stands of perf/, dry, against the demo in Docker
 	@trap '$(DEMO_COMPOSE) down --volumes --timeout 1' EXIT; \
 	$(DEMO_COMPOSE) up --build --detach --wait --quiet-pull; \
-	(cd examples && for scenario in ../perf/demo/scenarios/*.py; do \
+	(cd examples/demo && for scenario in ../../perf/demo/scenarios/*.py; do \
 		PYTHONPATH= $(PERF_PYTHON) -m ingots.perf $$scenario \
 			--config IS_PRINT_CONFIGS=off perf smoke; \
 	done)

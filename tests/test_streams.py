@@ -4,7 +4,7 @@ import json
 import typing as t
 import unittest
 
-from demo.asgi import app
+from asgi import app
 from starlette.testclient import TestClient
 
 

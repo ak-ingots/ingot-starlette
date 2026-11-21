@@ -3,11 +3,11 @@
 import typing as t
 import unittest
 
-from demo.asgi import app
-from demo.project import EchoProject
-from demo.starlette import EchoStarletteUnit
-from demo.starlette.api import EchoApiUnit
-from demo.starlette.api.echo import EchoEndpoint
+from asgi import app
+from project import EchoProject
+from extensions.starlette import EchoStarletteUnit
+from extensions.starlette.api import EchoApiUnit
+from extensions.starlette.api.echo import EchoEndpoint
 from ingots.puer import Slot
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
