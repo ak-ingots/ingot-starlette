@@ -11,7 +11,7 @@ from ingot_starlette.starlette.errors import (
     StarletteErrorsUnit,
 )
 
-from demo.echo.errors import EchoFailedError
+from echo.errors import EchoFailedError
 
 
 class EchoFailedPolicy(BaseStaticStarletteErrorPolicy):

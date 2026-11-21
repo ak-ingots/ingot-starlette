@@ -13,8 +13,8 @@ from ingot_starlette.starlette.websockets import BaseStarletteWebSocketResource
 if t.TYPE_CHECKING:
     from ingots.puer import BoundFactory
 
-    from demo.echo.operations import BaseEchoOperation
-    from demo.project import EchoProject
+    from echo.operations import BaseEchoOperation
+    from project import EchoProject
 
 
 class StreamResource(BaseStarletteWebSocketResource):

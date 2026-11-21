@@ -4,10 +4,10 @@ import asyncio
 import typing as t
 import unittest
 
-from demo.asgi import app
-from demo.project import EchoProject
-from demo.starlette import EchoStarletteUnit
-from demo.starlette.ws import EchoWebSocketsUnit
+from asgi import app
+from project import EchoProject
+from extensions.starlette import EchoStarletteUnit
+from extensions.starlette.ws import EchoWebSocketsUnit
 from ingots.puer import Factory, Slot
 from starlette.testclient import TestClient, WebSocketDenialResponse
 from starlette.websockets import WebSocket, WebSocketDisconnect
@@ -69,7 +69,7 @@ class ChatTestCase(unittest.TestCase):
 
     def test_the_stream_closes_with_the_connection(self) -> None:
         with TestClient(app) as client:
-            with self.assertLogs("demo.echo.operations", "INFO") as logs:
+            with self.assertLogs("echo.operations", "INFO") as logs:
                 with client.websocket_connect("/ws/chat") as ws:
                     ws.send_json({"op": "ticks", "interval": 0.01})
                     ws.receive_json()

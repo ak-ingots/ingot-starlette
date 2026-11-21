@@ -1,5 +1,6 @@
 """
-The application of Starlette, the project inside: ``uvicorn demo.asgi:app``.
+The application of Starlette, the project inside: ``uvicorn asgi:app``, from its
+root.
 Beside the project, what is written the Starlette way, of no slot: here a
 function and a router, as an application keeps its static files, or mounts
 an application not yet moved into the project.
@@ -11,7 +12,7 @@ from starlette.routing import Route, Router
 
 from ingot_starlette.runner import StarletteRunner
 
-from .project import EchoProject
+from project import EchoProject
 
 
 async def version(request: Request) -> Response:

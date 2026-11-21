@@ -7,7 +7,7 @@ import typing as t
 from ingots.defaults.operations import CallersProvider, OperationsUnit, Permissions
 from ingots.puer import Slot
 
-from demo.echo import EchoUnit
+from echo import EchoUnit
 
 
 class EchoCallersProvider(CallersProvider):

@@ -16,14 +16,14 @@ from starlette.routing import Route
 from ingot_starlette.starlette import StarletteEndpoint
 from ingot_starlette.starlette.errors import encode_problem
 
-from demo.echo.operations import TicksParameters
+from echo.operations import TicksParameters
 
 if t.TYPE_CHECKING:
     from collections.abc import AsyncIterator, Iterator
 
     from starlette.routing import BaseRoute
 
-    from demo.project import EchoProject
+    from project import EchoProject
     from ingot_starlette.operations import OperationStream
 
 NDJSON: t.Final = "application/x-ndjson"

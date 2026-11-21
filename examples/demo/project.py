@@ -1,7 +1,9 @@
 """
 The project of the echo over Starlette, of the units of its parts: the
-domain, ``echo``, of no transport; ``starlette``, its endpoints, of the API
-and of the pages. As the echo of ingot-grpcio, to compare them.
+domain, ``echo``, of no transport; ``extensions``, what it extends of the
+framework and of the addon, the settings, the logging, the operations and
+Starlette, its endpoints, of the API and of the pages. As the echo of
+ingot-grpcio, to compare them.
 
 =========================  ==================================================
 ``POST /api/echo``         ``{"text": ...}`` -> ``{"text": ...}``
@@ -24,13 +26,17 @@ from ingots.puer import Slot
 
 from ingot_starlette import StarletteProject
 
-from .echo import EchoUnit
-from .operations import EchoOperationsUnit
-from .starlette import EchoStarletteUnit
+from echo import EchoUnit
+from extensions.logging import EchoLoggingUnit
+from extensions.operations import EchoOperationsUnit
+from extensions.settings import EchoSettingsUnit
+from extensions.starlette import EchoStarletteUnit
 
 
 class EchoProject(StarletteProject):
     env_configs_prefix = "APP"
+    settings = Slot(EchoSettingsUnit)
+    logging = Slot(EchoLoggingUnit)
     operations = Slot(EchoOperationsUnit)
     starlette = Slot(EchoStarletteUnit)
     echo = Slot(EchoUnit)

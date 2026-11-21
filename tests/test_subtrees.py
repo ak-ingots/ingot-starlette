@@ -3,10 +3,10 @@
 import typing as t
 import unittest
 
-from demo.asgi import app
-from demo.project import EchoProject
-from demo.starlette import EchoStarletteUnit
-from demo.starlette.pages import EchoPagesUnit
+from asgi import app
+from project import EchoProject
+from extensions.starlette import EchoStarletteUnit
+from extensions.starlette.pages import EchoPagesUnit
 from ingots.puer import Slot
 from starlette.requests import HTTPConnection
 from starlette.testclient import TestClient

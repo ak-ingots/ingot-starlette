@@ -11,6 +11,6 @@ COPY dist/ /dist/
 RUN uv pip install --system --no-cache -r /dist/demo-requirements.txt \
     "$(ls /dist/*.whl)"
 WORKDIR /srv
-COPY examples/demo/ demo/
+COPY examples/demo/ ./
 ENTRYPOINT ["uvicorn"]
-CMD ["demo.asgi:app", "--host", "0.0.0.0", "--port", "8000", "--no-access-log"]
+CMD ["asgi:app", "--host", "0.0.0.0", "--port", "8000", "--no-access-log"]

@@ -3,8 +3,8 @@
 services:
   app:
     build:
-      context: ..
-      dockerfile: examples/Dockerfile
+      context: ../..
+      dockerfile: examples/demo/Dockerfile
       args:
         PYTHON: ${DEMO_PYTHON:-}
     environment:
