@@ -1,0 +1,22 @@
+# The demo: the application of ingot-starlette under uvicorn, behind its port.
+# Its image takes dist/ of `make perf-build`: run it first.
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: examples/Dockerfile
+      args:
+        PYTHON: ${DEMO_PYTHON:-}
+    environment:
+      APP_IS_STRICT_CONFIGS: "on"
+    ports:
+      - "127.0.0.1:${DEMO_TEST_DEMO_PORT:-8071}:8000"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - import socket; socket.create_connection(("localhost", 8000), 1)
+      interval: 2s
+      timeout: 5s
+      retries: 30
