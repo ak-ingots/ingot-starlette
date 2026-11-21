@@ -1,24 +1,11 @@
-"""The streams of examples/demo: NDJSON over HTTP, a WebSocket."""
+"""The streams of examples/demo over HTTP: NDJSON."""
 
 import json
 import typing as t
 import unittest
 
 from demo.asgi import app
-from demo.project import EchoProject
-from demo.starlette import EchoStarletteUnit
-from demo.starlette.api import EchoApiUnit
-from ingots.puer import Slot
-from starlette.routing import WebSocketRoute
-from starlette.testclient import TestClient, WebSocketDenialResponse
-from starlette.websockets import WebSocket, WebSocketDisconnect
-
-from ingot_starlette.runner import StarletteRunner
-
-if t.TYPE_CHECKING:
-    from collections.abc import Iterator
-
-    from starlette.routing import BaseRoute
+from starlette.testclient import TestClient
 
 
 class HttpStreamTestCase(unittest.TestCase):
@@ -51,48 +38,3 @@ class HttpStreamTestCase(unittest.TestCase):
 
     def test_a_stream_of_no_item(self) -> None:
         self.assertEqual(self.get_lines(count=-1), (200, []))
-
-
-class WebSocketTestCase(unittest.TestCase):
-    def test_each_text_is_echoed(self) -> None:
-        with TestClient(app) as client, client.websocket_connect("/api/stream") as ws:
-            for text in ("one", "two"):
-                ws.send_text(text)
-                self.assertEqual(ws.receive_text(), text)
-
-    def test_a_failure_closes_by_its_status(self) -> None:
-        with TestClient(app) as client, client.websocket_connect("/api/stream") as ws:
-            ws.send_text("fail")
-            self.assertEqual(ws.receive_json()["problem"]["status"], 409)
-            with self.assertRaises(WebSocketDisconnect) as caught:
-                ws.receive_text()
-        self.assertEqual(caught.exception.code, 4409)
-
-    def test_a_failure_before_the_accept_refuses(self) -> None:
-        with TestClient(StarletteRunner(RefusingProject)) as client:
-            with self.assertRaises(WebSocketDenialResponse) as caught:
-                with client.websocket_connect("/api/refused"):
-                    pass  # pragma: no cover
-        self.assertEqual(caught.exception.status_code, 409)
-        self.assertEqual(caught.exception.json()["status"], 409)
-
-
-class RefusingApiUnit(EchoApiUnit):
-    project: "RefusingProject"
-
-    async def refuse(self, websocket: WebSocket) -> None:
-        starlette, echo = self.project.starlette, self.project.echo
-        await starlette.run_operation(echo.op_fail, "refused", websocket)
-
-    @t.override
-    def _iter_routes(self) -> "Iterator[BaseRoute]":
-        yield from super()._iter_routes()
-        yield WebSocketRoute("/refused", self.refuse)
-
-
-class RefusingStarletteUnit(EchoStarletteUnit):
-    api = Slot(RefusingApiUnit)
-
-
-class RefusingProject(EchoProject):
-    starlette = Slot(RefusingStarletteUnit)

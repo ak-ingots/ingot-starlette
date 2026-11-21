@@ -8,9 +8,11 @@ and of the pages. As the echo of ingot-grpcio, to compare them.
 ``GET /api/echo/{text}``   ``{"text": ...}``
 ``POST /api/fail``         ``{"text": ...}`` -> 409, its problem
 ``GET /api/ticks``         ``?count=&interval=&fail_at=``, NDJSON
-``WS /api/stream``         each text echoed; ``fail`` closes it, 4409
+``WS /ws/stream``          ``{"text": ...}`` echoed; ``fail`` closes it, 4409
+``WS /ws/chat``            echoes and ticks beside, a problem the WS kept
 ``GET /``                  a page of HTML, a form of the echo
 ``POST /echo``, ``/fail``  the form posted: a redirect, 303, or a page of 409
+``GET /socket``            a page whose script opens ``/ws/stream``
 ``GET /version``           a function of Starlette, in ``asgi.py``
 ``GET /health/``           ``ok``, a router of Starlette, in ``asgi.py``
 =========================  ==================================================

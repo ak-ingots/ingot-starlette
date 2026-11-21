@@ -113,8 +113,8 @@ class StarletteApiTestCase(unittest.TestCase):
                 response = client.post("/api/fail", json={"text": "hi"})
                 self.assertEqual(response.status_code, 409)  # a policy still
                 self.assertTrue(runner.debug)
-            # its routes, its mount, the two mounts of the project
-            self.assertEqual(len(runner.routes), 2 + 1 + 2)
+            # its routes, its mount, the three mounts of the project
+            self.assertEqual(len(runner.routes), 2 + 1 + 3)
 
 
 async def teapot(request: Request) -> Response:
