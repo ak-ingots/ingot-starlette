@@ -1,6 +1,6 @@
 [project]
 name = "ingot-starlette"
-version = "0.1.0"
+version = "0.2.0"
 description = "Integration of Starlette, the ASGI framework, into Ingots."
 readme = "README.md"
 requires-python = ">=3.14"
