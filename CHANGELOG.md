@@ -2,6 +2,12 @@
 
 <!-- towncrier release notes start -->
 
+## [0.3.1] - 2026-11-21
+### Fixed
+- `StarletteEndpoint` takes any project, `Project` of the defaults, not
+  `StarletteProject` alone, so that an endpoint mixing in the RPCs of an
+  addon takes the project of the addon.
+
 ## [0.3.0] - 2026-11-21
 ### Added
 - Added the transcoding of the services of protobuf to HTTP, by the extra
