@@ -9,6 +9,7 @@ import uvicorn
 from demo.project import EchoProject
 from ingots.defaults import ProjectCliArgs
 from ingots.puer import UserError
+from starlette.exceptions import HTTPException
 from starlette.middleware.gzip import GZipMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse, PlainTextResponse, Response
@@ -91,25 +92,33 @@ class StarletteApiTestCase(unittest.TestCase):
 
     def test_the_routes_middleware_and_handlers_of_starlette_stay(self) -> None:
         runner = StarletteRunner(EchoProject)
-        runner.add_route("/", homepage)
+        runner.add_route("/hello", homepage)
+        runner.add_route("/teapot", teapot)
         runner.mount("/old", Router([Route("/", homepage)]))
         runner.add_middleware(GZipMiddleware, minimum_size=1)
         runner.add_exception_handler(404, not_found)
         runner.debug = True
         for _ in range(2):  # a lifespan anew builds on them, not on the last
             with TestClient(runner) as client:
-                self.assertEqual(client.get("/").json(), {"hello": "world"})
+                self.assertEqual(client.get("/hello").json(), {"hello": "world"})
                 self.assertEqual(client.get("/old/").json(), {"hello": "world"})
                 response = client.post("/api/echo", json={"text": "hi"})
                 self.assertEqual(response.json(), {"text": "hi"})
                 self.assertEqual(response.headers["content-encoding"], "gzip")
-                self.assertEqual(client.get("/nope").text, "no page")
+                # outside the subtrees, the handlers of Starlette; inside, theirs
+                self.assertEqual(client.get("/teapot").text, "no page")
+                response = client.get("/nope")
+                self.assertEqual(response.status_code, 404)
+                self.assertIn("<h1>Not Found</h1>", response.text)
                 response = client.post("/api/fail", json={"text": "hi"})
                 self.assertEqual(response.status_code, 409)  # a policy still
                 self.assertTrue(runner.debug)
-            self.assertEqual(
-                len(runner.routes), 1 + 1 + 1
-            )  # its route, its mount, the mount of the project
+            # its routes, its mount, the two mounts of the project
+            self.assertEqual(len(runner.routes), 2 + 1 + 2)
+
+
+async def teapot(request: Request) -> Response:
+    raise HTTPException(404)
 
 
 async def not_found(request: Request, error: Exception) -> Response:

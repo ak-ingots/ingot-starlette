@@ -9,14 +9,11 @@ __all__ = (
 )
 
 import abc
-import json
 import logging
 import typing as t
 
 from ingots.puer import Entity
 from starlette.exceptions import HTTPException
-from starlette.responses import Response
-from starlette.websockets import WebSocket, WebSocketState
 
 from .data import StarletteProblem
 
@@ -25,49 +22,20 @@ if t.TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-PROBLEM_CONTENT_TYPE: t.Final = "application/problem+json"
-_PROBLEM_CODES: t.Final = 4000  # the close of a WebSocket: + the status, 4409
-
 
 class BaseStarletteErrorPolicy(Entity):
     """
     The policy of an exception, a strategy: the problem a request raising
     it answers with, by :meth:`encode`, and how it is logged, at
     :attr:`LOG_LEVEL`, with the traceback when :attr:`LOG_EXC_INFO`. It
-    takes the exceptions of :attr:`EXCEPTION` and its subclasses: its
-    :meth:`handle` is the handler of Starlette for them, which Starlette
-    finds by the MRO of an exception.
+    takes the exceptions of :attr:`EXCEPTION` and its subclasses, which
+    Starlette finds by the MRO of an exception. What the problem looks like,
+    JSON or HTML, is the renderer's of the subtree it is raised in.
     """
 
     EXCEPTION: t.ClassVar[type[Exception]]
     LOG_LEVEL: t.ClassVar[int] = logging.INFO
     LOG_EXC_INFO: t.ClassVar[bool] = False
-
-    @t.final
-    async def handle(
-        self, connection: "HTTPConnection", error: Exception
-    ) -> Response | None:
-        """
-        The handler of Starlette: a request answers with the problem; a
-        WebSocket accepted gets the message ``{"problem": ...}`` and is
-        closed by ``4000 + status``, one not accepted is refused by the
-        response of the problem.
-        """
-        problem = self.report(error, connection)
-        response = Response(
-            json.dumps(encode_problem(problem)),
-            status_code=problem.status,
-            headers=dict(problem.headers),
-            media_type=PROBLEM_CONTENT_TYPE,
-        )
-        if not isinstance(connection, WebSocket):
-            return response
-        if connection.application_state == WebSocketState.CONNECTED:
-            await connection.send_json({"problem": encode_problem(problem)})
-            await connection.close(_PROBLEM_CODES + problem.status)
-        else:
-            await connection.send_denial_response(response)
-        return None
 
     @t.final
     def report(

@@ -15,11 +15,14 @@ prefix `Starlette`, so that an application imports it under its own name.
 `runner.py` is `StarletteRunner`, the application of Starlette a server
 imports, the project inside, configured by the lifespan; `starlette/` is
 the Starlette unit, the root endpoint, what the runner takes from the
-configured project: the routes and middleware of its hooks, `callers.py`,
+configured project: its two subtrees, each a mount of its own middleware and
+errors (`subtrees.py`; `api/`, JSON alone at `/api`, its guard of 406 and
+415 in `guards.py`; `pages/`, HTML at the root), `callers.py`,
 `endpoints.py` (an endpoint routes to its methods; one that is a unit too
-mounts its endpoints, a tree) and `errors/` (the policies as Starlette's
-exception handlers). `operations/` holds `BaseStreamOperation`, an
-operation giving a stream, a draft for `ingots`. No ingot-asgi:
+mounts its endpoints, a tree) and `errors/` (the policies, shared, tell the
+problem; `renderers.py`, a renderer of each subtree, its form).
+`operations/` holds `BaseStreamOperation`, an operation giving a stream, a
+draft for `ingots`. No ingot-asgi:
 the prototype on it is the branch `ingot-asgi-integration`.
 `examples/demo` is an application the tests run (`PYTHONPATH`, the copy
 of `make wheel-test`), in Docker by `examples/docker-compose.yml`;

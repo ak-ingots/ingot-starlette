@@ -12,7 +12,11 @@ from starlette.testclient import TestClient
 
 from ingot_starlette import StarletteProject
 from ingot_starlette.runner import StarletteRunner
-from ingot_starlette.starlette import StarletteEndpoint, StarletteUnit
+from ingot_starlette.starlette import (
+    StarletteApiUnit,
+    StarletteEndpoint,
+    StarletteUnit,
+)
 from ingot_starlette.starlette.errors import (
     BaseStaticStarletteErrorPolicy,
     StarletteErrorsUnit,
@@ -31,19 +35,25 @@ class UnitTestCase(unittest.TestCase):
         with TestClient(StarletteRunner(StarletteProject)) as client:
             response = client.get("/")
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.headers["content-type"], "application/problem+json")
+        self.assertEqual(response.headers["content-type"], "text/html; charset=utf-8")
 
     def test_an_endpoint_of_the_addon_routes_nothing(self) -> None:
         with TestClient(StarletteRunner(EndpointProject)) as client:
-            self.assertEqual(client.get("/").status_code, 404)
+            response = client.get("/api/")
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.headers["content-type"], "application/problem+json")
 
 
-class EndpointStarletteUnit(StarletteUnit):
+class EndpointApiUnit(StarletteApiUnit):
     endpoint = Slot(StarletteEndpoint)
 
     @t.override
     def _iter_routes(self) -> "Iterator[BaseRoute]":
         yield Mount("/endpoint", routes=self.endpoint.get_routes())
+
+
+class EndpointStarletteUnit(StarletteUnit):
+    api = Slot(EndpointApiUnit)
 
 
 class EndpointProject(StarletteProject):

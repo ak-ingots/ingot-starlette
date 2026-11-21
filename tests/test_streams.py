@@ -7,6 +7,7 @@ import unittest
 from demo.asgi import app
 from demo.project import EchoProject
 from demo.starlette import EchoStarletteUnit
+from demo.starlette.api import EchoApiUnit
 from ingots.puer import Slot
 from starlette.routing import WebSocketRoute
 from starlette.testclient import TestClient, WebSocketDenialResponse
@@ -70,22 +71,27 @@ class WebSocketTestCase(unittest.TestCase):
     def test_a_failure_before_the_accept_refuses(self) -> None:
         with TestClient(StarletteRunner(RefusingProject)) as client:
             with self.assertRaises(WebSocketDenialResponse) as caught:
-                with client.websocket_connect("/refused"):
+                with client.websocket_connect("/api/refused"):
                     pass  # pragma: no cover
         self.assertEqual(caught.exception.status_code, 409)
         self.assertEqual(caught.exception.json()["status"], 409)
 
 
-class RefusingStarletteUnit(EchoStarletteUnit):
+class RefusingApiUnit(EchoApiUnit):
     project: "RefusingProject"
 
     async def refuse(self, websocket: WebSocket) -> None:
-        await self.run_operation(self.project.echo.op_fail, "refused", websocket)
+        starlette, echo = self.project.starlette, self.project.echo
+        await starlette.run_operation(echo.op_fail, "refused", websocket)
 
     @t.override
     def _iter_routes(self) -> "Iterator[BaseRoute]":
         yield from super()._iter_routes()
         yield WebSocketRoute("/refused", self.refuse)
+
+
+class RefusingStarletteUnit(EchoStarletteUnit):
+    api = Slot(RefusingApiUnit)
 
 
 class RefusingProject(EchoProject):
