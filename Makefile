@@ -72,6 +72,9 @@ installed-test:
 		rm -rf "$$tmp"; \
 	done
 
+
+##@ Code
+
 # The protos of google.api, of googleapis-common-protos, beside its code
 GOOGLEAPIS = $(shell uv run python -c "import google.api.annotations_pb2 as m, pathlib; print(pathlib.Path(m.__file__).parents[2])")
 
@@ -93,16 +96,18 @@ all:  ## Build the sdist and the wheel into dist/
 	uv build --quiet
 
 
+##@ Load
+
 # the demo of perf-smoke: the application and the floor of the stand
 DEMO_COMPOSE := STAND_DIR=$(CURDIR)/perf/demo docker compose \
-	-f examples/demo/docker-compose.yml -f perf/demo/docker-compose.raw.yml
+	-f examples/demo/docker-compose.yml -f perf/demo/docker-compose.bare.yml
 export DEMO_PYTHON := $(lastword $(PYTHONS))
 
 # What a stand builds a role by, its tree the candidate's or a worktree of
 # the baseline: the distributions the example installs, its server too. The
 # load itself runs from ingots-libs, perf/README.md telling how.
 .PHONY: perf-build
-perf-build: all  ## the distributions of the example, what a stand builds a role by
+perf-build: all  ## The distributions of the example, what a stand builds a role by
 	uv export --quiet --no-dev --group demo --no-emit-project --no-hashes \
 		--output-file dist/demo-requirements.txt
 
@@ -111,7 +116,7 @@ perf-build: all  ## the distributions of the example, what a stand builds a role
 PERF_PYTHON ?= uv run python
 
 .PHONY: perf-smoke
-perf-smoke: perf-build  ## the scenarios of the stands of perf/, dry, against the demo in Docker
+perf-smoke: perf-build  ## The scenarios of the stands of perf/, dry, against the demo in Docker
 	@trap '$(DEMO_COMPOSE) down --volumes --timeout 1' EXIT; \
 	$(DEMO_COMPOSE) up --build --detach --wait --quiet-pull; \
 	(cd examples/demo && for scenario in ../../perf/demo/scenarios/*.py; do \

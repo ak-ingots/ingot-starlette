@@ -10,4 +10,4 @@ meta=${INGOTS_META:-$(git -C "$here" rev-parse --show-toplevel)/..}
 # the scenarios run from the root of the demo, the stand's modules after
 # its own on sys.path: the project of the load is load.py, not project.py
 exec "$meta/perf/compose-stand" --stand "$here" --example examples/demo \
-    --file docker-compose.raw.yml --file docker-compose.perf.yml "$@"
+    --file docker-compose.bare.yml --file docker-compose.perf.yml "$@"

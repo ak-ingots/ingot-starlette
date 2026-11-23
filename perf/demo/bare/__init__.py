@@ -1,5 +1,5 @@
 """
-``uvicorn raw:app``: the routes of the echo of the demo on Starlette alone,
+``uvicorn bare:app``: the routes of the echo of the demo on Starlette alone,
 no project, no operation, no policy, as the floor of its cost: the same
 bodies, the same problem of a failure, a constant.
 """
