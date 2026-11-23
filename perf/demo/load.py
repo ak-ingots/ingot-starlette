@@ -2,8 +2,8 @@
 What the scenarios of the load of the demo share: the project of the
 client with the configs of a run, ``PerfConfigs`` of ingots joined to its
 own, and its servers of HTTP, components opening the connections of the
-clients: ``default`` the application on ``DEMO_PORT``, ``raw`` the floor of
-the stand, Starlette alone, on ``DEMO_RAW_PORT``.
+clients: ``default`` the application on ``DEMO_PORT``, ``bare`` the floor of
+the stand, Starlette alone, on ``DEMO_BARE_PORT``.
 
 The client of HTTP is of asyncio, as light as it gets, so that the server,
 not the load, is what saturates: a connection kept alive for each client of
@@ -28,7 +28,7 @@ from ingots.puer import Component, Slot, Unit
 class DemoPerfConfigs(PerfConfigs):
     DEMO_HOST = StrConfig("127.0.0.1")
     DEMO_PORT = IntConfig(8071)  # the application
-    DEMO_RAW_PORT = IntConfig(8072)  # its floor, Starlette alone
+    DEMO_BARE_PORT = IntConfig(8072)  # its floor, Starlette alone
 
 
 class DemoPerfSettingsUnit(SettingsUnit):
@@ -128,21 +128,21 @@ class DefaultDemoHttpServer(BaseDemoHttpServer):
         return self.project.settings.configs.DEMO_PORT
 
 
-class RawDemoHttpServer(BaseDemoHttpServer):
+class BareDemoHttpServer(BaseDemoHttpServer):
     @t.override
     def _get_port(self) -> int:
-        return self.project.settings.configs.DEMO_RAW_PORT
+        return self.project.settings.configs.DEMO_BARE_PORT
 
 
 class DemoHttpUnit(Unit):
     default = Slot(DefaultDemoHttpServer)
-    raw = Slot(RawDemoHttpServer)
+    bare = Slot(BareDemoHttpServer)
 
 
 class DemoPerfProject(Project):
     """The project of a scenario, which adds its unit ``perf``."""
 
-    env_configs_prefix = "DEMO_TEST"
+    env_configs_prefix = "PERF_TEST"
     settings = Slot(DemoPerfSettingsUnit)
     http = Slot(DemoHttpUnit)
 

@@ -7,10 +7,10 @@ from ingots.puer import Slot
 from load import BODY, DemoPerfProject, build_post, check_status
 
 
-class RawFailer(LoadClient["PerfProject", "RawFailerGroup"]):
+class BareFailer(LoadClient["PerfProject", "BareFailerGroup"]):
     @t.override
     async def asyncSetUp(self) -> None:
-        server = await self.project.http.raw
+        server = await self.project.http.bare
         self.connection = await server.connect()
         self.request = build_post(server.get_host(), "/api/fail", BODY)
 
@@ -20,13 +20,13 @@ class RawFailer(LoadClient["PerfProject", "RawFailerGroup"]):
             check_status(await self.connection.send(self.request), 409)
 
 
-class RawFailerGroup(LoadGroup[None]):
-    clients = (RawFailer,)
+class BareFailerGroup(LoadGroup[None]):
+    clients = (BareFailer,)
 
 
-class RawFailEchoPerf(PerfUnit[None]):
-    group = RawFailerGroup
+class BareFailEchoPerf(PerfUnit[None]):
+    group = BareFailerGroup
 
 
 class PerfProject(DemoPerfProject):
-    perf = Slot(RawFailEchoPerf)
+    perf = Slot(BareFailEchoPerf)
