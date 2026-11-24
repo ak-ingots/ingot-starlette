@@ -2,6 +2,14 @@
 
 <!-- towncrier release notes start -->
 
+## [0.4.0] - 2026-11-24
+### Changed
+- Moved on to ingots 0.37.
+- `examples/demo` is laid out as an application is: at its root `project.py`,
+  collecting `extensions/`, a module each for what it extends, the settings,
+  the logging, the operations and Starlette, beside the domain `echo/`, run
+  as `uvicorn asgi:app` from it, its Docker files beside it.
+
 ## [0.3.1] - 2026-11-21
 ### Fixed
 - `StarletteEndpoint` takes any project, `Project` of the defaults, not
