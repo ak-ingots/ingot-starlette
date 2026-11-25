@@ -1,5 +1,7 @@
 # ingot-starlette
 
+[![PyPI](https://img.shields.io/pypi/v/ingot-starlette.svg)](https://pypi.org/project/ingot-starlette/)
+[![Python](https://img.shields.io/pypi/pyversions/ingot-starlette.svg)](https://pypi.org/project/ingot-starlette/)
 [![ci](https://github.com/ak-ingots/ingot-starlette/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ak-ingots/ingot-starlette/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/ak-ingots/ingot-starlette/blob/main/LICENSE)
 
