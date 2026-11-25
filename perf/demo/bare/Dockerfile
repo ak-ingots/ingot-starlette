@@ -1,8 +1,5 @@
-# The floor of the demo: its routes on Starlette alone, under uvicorn, at the
-# versions of the demo of the role, dist/demo-requirements.txt of its tree,
-# which `make perf-build` exports; the code of the floor the stand's, its
-# context `stand`. Built from the root of the tree, on the Python of
-# DEMO_PYTHON, as the demo is.
+# The floor of the demo: its routes on Starlette alone, at the versions of
+# the demo of the role.
 ARG PYTHON
 FROM python:${PYTHON}-slim
 COPY --from=ghcr.io/astral-sh/uv:0.13.5 /uv /usr/local/bin/uv

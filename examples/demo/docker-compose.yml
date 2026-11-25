@@ -1,4 +1,3 @@
-# The demo: the application of ingot-starlette under uvicorn, behind its port.
 # Its image takes dist/ of `make perf-build`: run it first.
 services:
   app:

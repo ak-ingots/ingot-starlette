@@ -1,9 +1,3 @@
-# Development entrypoint (uv):
-#
-#   make              show the target list
-#   make check        everything the `ci` workflow runs
-#   make all          build the distributions into dist/
-
 SHELL := /bin/bash
 .SHELLFLAGS := -eu -o pipefail -c
 .DEFAULT_GOAL := help
@@ -14,17 +8,13 @@ SRC := ingot_starlette tests examples perf
 # The tests run the application of examples/demo too, its modules at its root.
 export PYTHONPATH := examples/demo
 
-# Supported interpreters: keep in step with the classifiers and the `wheel`
-# matrix in .github/workflows/ci.yml.
 PYTHONS ?= 3.14 3.15
 
-# What `cl-check` compares the branch with.
 AGAINST ?= origin/main
 
 
 ##@ Checks
 
-# The `ci` workflow runs exactly these targets, one per job.
 .PHONY: check
 check: lint test coverage wheel-test cl-check  ## Every check: lint, test, coverage, wheel-test, cl-check
 
@@ -43,9 +33,6 @@ coverage:  ## unittest on the working tree under coverage; fails below 99%
 	uv run coverage run -m unittest discover -s tests -t .
 	uv run coverage report
 
-# ADR 0003: the tests run against the built wheel, installed into a fresh
-# virtualenv, from a copy of tests/ outside the repository, so the package can
-# be imported only from the wheel.
 .PHONY: wheel-test
 wheel-test: all  ## unittest on the built wheel, once per interpreter in PYTHONS
 	@$(MAKE) --no-print-directory installed-test WHEEL="$$(echo dist/*.whl)"
@@ -98,21 +85,15 @@ all:  ## Build the sdist and the wheel into dist/
 
 ##@ Load
 
-# the demo of perf-smoke: the application and the floor of the stand
 DEMO_COMPOSE := STAND_DIR=$(CURDIR)/perf/demo docker compose \
 	-f examples/demo/docker-compose.yml -f perf/demo/docker-compose.bare.yml
 export DEMO_PYTHON := $(lastword $(PYTHONS))
 
-# What a stand builds a role by, its tree the candidate's or a worktree of
-# the baseline: the distributions the example installs, its server too. The
-# load itself runs from ingots-libs, perf/README.md telling how.
 .PHONY: perf-build
 perf-build: all  ## The distributions of the example, what a stand builds a role by
 	uv export --quiet --no-dev --group demo --no-emit-project --no-hashes \
 		--output-file dist/demo-requirements.txt
 
-# The scenarios of the stands, dry, against the demo in Docker: they run,
-# no number measured.
 PERF_PYTHON ?= uv run python
 
 .PHONY: perf-smoke
