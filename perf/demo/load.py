@@ -18,10 +18,9 @@ import typing as t
 
 import h11
 
-from ingots.defaults import Project
 from ingots.defaults.settings import SettingsUnit
 from ingots.defaults.settings.configs import IntConfig, StrConfig
-from ingots.perf import PerfConfigs
+from ingots.perf import PerfConfigs, PerfStandProject
 from ingots.puer import Component, Slot, Unit
 
 
@@ -139,7 +138,7 @@ class DemoHttpUnit(Unit):
     bare = Slot(BareDemoHttpServer)
 
 
-class DemoPerfProject(Project):
+class DemoPerfProject(PerfStandProject):
     """The project of a scenario, which adds its unit ``perf``."""
 
     env_configs_prefix = "PERF_TEST"

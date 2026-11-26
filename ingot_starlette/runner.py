@@ -6,7 +6,7 @@ import logging
 import typing as t
 from dataclasses import dataclass
 
-from ingots.defaults import ProjectCliArgs
+from ingots.defaults.cli import ProjectCliArgs
 from ingots.puer import UserError
 from starlette.applications import Starlette
 
@@ -103,7 +103,7 @@ class StarletteRunner(Starlette):
     @t.final
     async def _start(self) -> None:
         project = self._project_cls()
-        project._cli_set_args(self._cli_args)
+        project.cli._cli_set_args(self._cli_args)
         try:
             await project._configure()
         except Exception as error:

@@ -7,7 +7,7 @@ from unittest import mock
 import httpx
 import uvicorn
 from project import EchoProject
-from ingots.defaults import ProjectCliArgs
+from ingots.defaults.cli import ProjectCliArgs
 from ingots.puer import UserError
 from starlette.exceptions import HTTPException
 from starlette.middleware.gzip import GZipMiddleware
