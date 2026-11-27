@@ -12,7 +12,7 @@ from ingot_starlette.settings import StarletteSettingsUnit
 from ingot_starlette.settings.configs import StarletteConfigs
 from ingot_starlette.starlette import StarletteUnit
 from ingots.defaults import Project
-from ingots.puer.cli import CommandRunner
+from ingots.defaults.cli import CommandRunner
 
 
 class ProjectTestCase(unittest.TestCase):
